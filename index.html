@@ -1,79 +1,330 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Omnicloud Global Operations Dashboard</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Omnicloud Global Risk Intelligence Center</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
 body{
-    background:#0f172a;
-    color:white;
-    font-family:Arial;
-    margin:0;
-    padding:20px;
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0f172a;
+  color:white;
+  overflow:hidden;
+}
+
+.container{
+  padding:22px;
 }
 
 .header{
-    font-size:32px;
-    font-weight:bold;
-    margin-bottom:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
 }
 
-.cards{
-    display:flex;
-    gap:20px;
+.title{
+  font-size:34px;
+  font-weight:800;
+}
+
+.live{
+  color:#22c55e;
+  font-weight:bold;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:16px;
 }
 
 .card{
-    background:#1e293b;
-    padding:20px;
-    border-radius:12px;
-    width:220px;
+  background:#1e293b;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 0 20px rgba(0,0,0,.25);
 }
 
 .label{
-    color:#94a3b8;
+  color:#94a3b8;
+  font-size:15px;
 }
 
 .value{
-    font-size:32px;
-    margin-top:10px;
+  font-size:34px;
+  margin-top:10px;
 }
 
-</style>
+.main{
+  display:grid;
+  grid-template-columns: 2fr 1fr;
+  gap:16px;
+  margin-top:16px;
+}
 
+.table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+
+.table th,.table td{
+  padding:10px;
+  border-bottom:1px solid #334155;
+  text-align:left;
+}
+
+.up{color:#22c55e;}
+.down{color:#ef4444;}
+
+.risk{
+  font-size:42px;
+  font-weight:bold;
+  color:#facc15;
+}
+
+.bar{
+  width:100%;
+  background:#334155;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:12px;
+}
+
+.bar-fill{
+  height:18px;
+  width:72%;
+  background:linear-gradient(90deg,#22c55e,#facc15,#ef4444);
+}
+
+.feed{
+  margin-top:16px;
+  height:145px;
+  overflow:hidden;
+  font-size:14px;
+}
+
+.event{
+  padding:8px 0;
+  border-bottom:1px solid #334155;
+  color:#cbd5e1;
+}
+
+.small{
+  color:#94a3b8;
+  font-size:13px;
+}
+</style>
 </head>
 
 <body>
+<div class="container">
 
-<div class="header">
-🌎 Omnicloud Global Operations Dashboard
+  <div class="header">
+    <div class="title">🌎 Omnicloud Global Risk Intelligence Center</div>
+    <div>
+      <span class="live">● LIVE</span>
+      <span class="small" id="clock"></span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="label">Internet Traffic Share</div>
+      <div class="value" id="traffic">29.31%</div>
+      <div class="small">Cloudflare Radar style indicator</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Active Wildfire Signals</div>
+      <div class="value" id="wildfires">42</div>
+      <div class="small">US critical event layer</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Power Outage Impact</div>
+      <div class="value" id="outages">18.4K</div>
+      <div class="small">Customers affected</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Global Risk Index</div>
+      <div class="value" id="risk">72%</div>
+      <div class="bar"><div class="bar-fill" id="riskbar"></div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="card">
+      <div class="label">Traffic Trends - Last Minutes</div>
+      <canvas id="trafficChart" height="115"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="label">Operational Status</div>
+      <div class="risk" id="status">ELEVATED</div>
+      <div class="small">Dynamic risk posture based on external event indicators</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="card">
+      <div class="label">Top Countries by Internet Traffic</div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th>Traffic</th>
+            <th>Trend</th>
+          </tr>
+        </thead>
+        <tbody id="countryTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="label">Live Event Feed</div>
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+
 </div>
 
-<div class="cards">
+<script>
+const countries = [
+  ["🇺🇸 United States",29.31],
+  ["🇮🇳 India",5.44],
+  ["🇧🇷 Brazil",4.78],
+  ["🇩🇪 Germany",4.04],
+  ["🇯🇵 Japan",3.89]
+];
 
-<div class="card">
-<div class="label">Top Country</div>
-<div class="value">USA</div>
-</div>
+const events = [
+  "Internet traffic spike detected - United States",
+  "Wildfire signal updated - California",
+  "Power outage impact increased - Texas",
+  "Weather alert updated - Atlantic region",
+  "Seismic activity layer refreshed - Alaska",
+  "Traffic congestion alert - Phoenix metro",
+  "Critical infrastructure layer synchronized",
+  "External intelligence feed updated"
+];
 
-<div class="card">
-<div class="label">Internet Traffic</div>
-<div class="value">29.31%</div>
-</div>
+function rand(min,max){
+  return Math.random()*(max-min)+min;
+}
 
-<div class="card">
-<div class="label">Wildfires</div>
-<div class="value">42</div>
-</div>
+function updateClock(){
+  document.getElementById("clock").innerText =
+    "  " + new Date().toLocaleTimeString();
+}
+setInterval(updateClock,1000);
+updateClock();
 
-<div class="card">
-<div class="label">Power Outages</div>
-<div class="value">18K</div>
-</div>
+function updateCards(){
+  const traffic = rand(29.1,29.8).toFixed(2);
+  const fires = Math.floor(rand(38,57));
+  const outage = rand(17.5,22.8).toFixed(1);
+  const risk = Math.floor(rand(68,88));
 
-</div>
+  document.getElementById("traffic").innerText = traffic + "%";
+  document.getElementById("wildfires").innerText = fires;
+  document.getElementById("outages").innerText = outage + "K";
+  document.getElementById("risk").innerText = risk + "%";
+  document.getElementById("riskbar").style.width = risk + "%";
+
+  const status = document.getElementById("status");
+  if(risk < 70){
+    status.innerText = "NORMAL";
+    status.style.color = "#22c55e";
+  } else if(risk < 82){
+    status.innerText = "ELEVATED";
+    status.style.color = "#facc15";
+  } else {
+    status.innerText = "HIGH RISK";
+    status.style.color = "#ef4444";
+  }
+}
+
+function updateTable(){
+  const tbody = document.getElementById("countryTable");
+  tbody.innerHTML = "";
+
+  countries.forEach(c=>{
+    const delta = rand(-0.35,0.35);
+    const value = (c[1] + delta).toFixed(2);
+    const trend = delta >= 0 
+      ? `<span class="up">▲ ${delta.toFixed(2)}%</span>`
+      : `<span class="down">▼ ${Math.abs(delta).toFixed(2)}%</span>`;
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${c[0]}</td>
+        <td>${value}%</td>
+        <td>${trend}</td>
+      </tr>
+    `;
+  });
+}
+
+function addEvent(){
+  const feed = document.getElementById("feed");
+  const item = document.createElement("div");
+  item.className = "event";
+  item.innerText = new Date().toLocaleTimeString() + "  |  " +
+    events[Math.floor(Math.random()*events.length)];
+  feed.prepend(item);
+
+  while(feed.children.length > 8){
+    feed.removeChild(feed.lastChild);
+  }
+}
+
+const ctx = document.getElementById("trafficChart").getContext("2d");
+const chart = new Chart(ctx,{
+  type:"line",
+  data:{
+    labels:Array.from({length:12},(_,i)=>i),
+    datasets:[{
+      label:"HTTP Traffic",
+      data:Array.from({length:12},()=>rand(25,35)),
+      borderWidth:3,
+      tension:.35
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{labels:{color:"#cbd5e1"}}
+    },
+    scales:{
+      x:{ticks:{color:"#94a3b8"},grid:{color:"#334155"}},
+      y:{ticks:{color:"#94a3b8"},grid:{color:"#334155"}}
+    }
+  }
+});
+
+function updateChart(){
+  chart.data.labels.push("");
+  chart.data.labels.shift();
+  chart.data.datasets[0].data.push(rand(25,35));
+  chart.data.datasets[0].data.shift();
+  chart.update();
+}
+
+updateCards();
+updateTable();
+addEvent();
+
+setInterval(updateCards,3000);
+setInterval(updateTable,5000);
+setInterval(addEvent,2500);
+setInterval(updateChart,2500);
+</script>
 
 </body>
 </html>
