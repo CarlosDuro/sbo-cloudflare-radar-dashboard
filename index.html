@@ -3,327 +3,475 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Omnicloud Global Risk Intelligence Center</title>
+<title>Retail Operations Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
   margin:0;
   font-family:Arial, sans-serif;
-  background:#0f172a;
-  color:white;
+  background:#0b1220;
+  color:#fff;
   overflow:hidden;
 }
 
-.container{
-  padding:22px;
+.dashboard{
+  padding:18px;
 }
 
 .header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:18px;
+  margin-bottom:14px;
 }
 
 .title{
-  font-size:34px;
+  font-size:28px;
   font-weight:800;
 }
 
+.subtitle{
+  color:#9ca3af;
+  font-size:13px;
+}
+
 .live{
+  background:#064e3b;
   color:#22c55e;
+  padding:8px 14px;
+  border-radius:20px;
   font-weight:bold;
+  font-size:13px;
+}
+
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.card{
+  background:linear-gradient(180deg,#182235,#111827);
+  border:1px solid #253247;
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 0 18px rgba(0,0,0,.35);
+}
+
+.kpi-title{
+  color:#9ca3af;
+  font-size:13px;
+}
+
+.kpi-value{
+  font-size:26px;
+  font-weight:800;
+  margin-top:8px;
+}
+
+.kpi-trend{
+  color:#22c55e;
+  font-size:12px;
+  margin-top:8px;
 }
 
 .grid{
   display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap:16px;
+  grid-template-columns:2fr 1.2fr 1.2fr;
+  gap:12px;
+  margin-bottom:12px;
 }
 
-.card{
-  background:#1e293b;
-  border-radius:16px;
-  padding:18px;
-  box-shadow:0 0 20px rgba(0,0,0,.25);
-}
-
-.label{
-  color:#94a3b8;
-  font-size:15px;
-}
-
-.value{
-  font-size:34px;
-  margin-top:10px;
-}
-
-.main{
+.grid2{
   display:grid;
-  grid-template-columns: 2fr 1fr;
-  gap:16px;
-  margin-top:16px;
+  grid-template-columns:1.2fr 1.4fr 1.4fr;
+  gap:12px;
 }
 
-.table{
+.section-title{
+  font-size:15px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+table{
   width:100%;
   border-collapse:collapse;
-  margin-top:10px;
+  font-size:13px;
 }
 
-.table th,.table td{
-  padding:10px;
-  border-bottom:1px solid #334155;
+th,td{
+  padding:9px;
+  border-bottom:1px solid #253247;
   text-align:left;
 }
 
-.up{color:#22c55e;}
-.down{color:#ef4444;}
-
-.risk{
-  font-size:42px;
-  font-weight:bold;
-  color:#facc15;
+th{
+  color:#9ca3af;
 }
 
-.bar{
-  width:100%;
-  background:#334155;
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:12px;
-}
-
-.bar-fill{
-  height:18px;
-  width:72%;
-  background:linear-gradient(90deg,#22c55e,#facc15,#ef4444);
-}
+.good{color:#22c55e;}
+.warn{color:#facc15;}
+.bad{color:#ef4444;}
 
 .feed{
-  margin-top:16px;
-  height:145px;
+  height:180px;
   overflow:hidden;
-  font-size:14px;
 }
 
 .event{
   padding:8px 0;
-  border-bottom:1px solid #334155;
-  color:#cbd5e1;
+  border-bottom:1px solid #253247;
+  font-size:13px;
+  color:#d1d5db;
 }
 
+.badge{
+  padding:4px 8px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.blue{background:#1d4ed8;}
+.green{background:#15803d;}
+.orange{background:#c2410c;}
+.red{background:#b91c1c;}
+
 .small{
-  color:#94a3b8;
-  font-size:13px;
+  color:#9ca3af;
+  font-size:12px;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
+<div class="dashboard">
 
   <div class="header">
-    <div class="title">🌎 Omnicloud Global Risk Intelligence Center</div>
     <div>
+      <div class="title">🌎 Retail Operations Intelligence Dashboard</div>
+      <div class="subtitle">Real-time operational insights across stores, parking areas, sales, and customer activity</div>
+    </div>
+    <div>
+      <span class="small" id="updated"></span>
       <span class="live">● LIVE</span>
-      <span class="small" id="clock"></span>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="card">
+      <div class="kpi-title">People Count Today</div>
+      <div class="kpi-value" id="peopleCount">24,850</div>
+      <div class="kpi-trend" id="peopleTrend">↑ 6.2% vs yesterday</div>
+    </div>
+
+    <div class="card">
+      <div class="kpi-title">People Detected Now</div>
+      <div class="kpi-value" id="peopleNow">438</div>
+      <div class="kpi-trend">Live camera analytics</div>
+    </div>
+
+    <div class="card">
+      <div class="kpi-title">Cars Entering Parking</div>
+      <div class="kpi-value" id="cars">1,284</div>
+      <div class="kpi-trend">↑ 8.7% vs last hour</div>
+    </div>
+
+    <div class="card">
+      <div class="kpi-title">Total Sales Today</div>
+      <div class="kpi-value" id="sales">$1.84M</div>
+      <div class="kpi-trend">↑ 5.9% vs yesterday</div>
+    </div>
+
+    <div class="card">
+      <div class="kpi-title">Transactions</div>
+      <div class="kpi-value" id="transactions">38,420</div>
+      <div class="kpi-trend">↑ 4.3% vs yesterday</div>
+    </div>
+
+    <div class="card">
+      <div class="kpi-title">Conversion Rate</div>
+      <div class="kpi-value" id="conversion">64.8%</div>
+      <div class="kpi-trend">People detected to transaction ratio</div>
     </div>
   </div>
 
   <div class="grid">
     <div class="card">
-      <div class="label">Internet Traffic Share</div>
-      <div class="value" id="traffic">29.31%</div>
-      <div class="small">Cloudflare Radar style indicator</div>
+      <div class="section-title">Sales & Transactions Trend</div>
+      <canvas id="salesChart" height="120"></canvas>
     </div>
 
     <div class="card">
-      <div class="label">Active Wildfire Signals</div>
-      <div class="value" id="wildfires">42</div>
-      <div class="small">US critical event layer</div>
+      <div class="section-title">People Detection by Zone</div>
+      <canvas id="zoneChart" height="120"></canvas>
     </div>
 
     <div class="card">
-      <div class="label">Power Outage Impact</div>
-      <div class="value" id="outages">18.4K</div>
-      <div class="small">Customers affected</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Global Risk Index</div>
-      <div class="value" id="risk">72%</div>
-      <div class="bar"><div class="bar-fill" id="riskbar"></div></div>
+      <div class="section-title">Parking Flow</div>
+      <canvas id="parkingChart" height="120"></canvas>
     </div>
   </div>
 
-  <div class="main">
+  <div class="grid2">
     <div class="card">
-      <div class="label">Traffic Trends - Last Minutes</div>
-      <canvas id="trafficChart" height="115"></canvas>
-    </div>
-
-    <div class="card">
-      <div class="label">Operational Status</div>
-      <div class="risk" id="status">ELEVATED</div>
-      <div class="small">Dynamic risk posture based on external event indicators</div>
-    </div>
-  </div>
-
-  <div class="main">
-    <div class="card">
-      <div class="label">Top Countries by Internet Traffic</div>
-      <table class="table">
+      <div class="section-title">Top Stores by Activity</div>
+      <table>
         <thead>
           <tr>
-            <th>Country</th>
-            <th>Traffic</th>
-            <th>Trend</th>
+            <th>Store</th>
+            <th>People</th>
+            <th>Sales</th>
+            <th>Status</th>
           </tr>
         </thead>
-        <tbody id="countryTable"></tbody>
+        <tbody id="storeTable"></tbody>
       </table>
     </div>
 
     <div class="card">
-      <div class="label">Live Event Feed</div>
+      <div class="section-title">Live Operational Events</div>
       <div class="feed" id="feed"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Retail Intelligence Summary</div>
+      <table>
+        <tbody>
+          <tr>
+            <td>Peak Zone</td>
+            <td id="peakZone">Main Entrance</td>
+          </tr>
+          <tr>
+            <td>Parking Occupancy</td>
+            <td id="parkingOcc">78%</td>
+          </tr>
+          <tr>
+            <td>Avg. Basket Size</td>
+            <td id="basket">$47.80</td>
+          </tr>
+          <tr>
+            <td>Checkout Queue Level</td>
+            <td><span class="badge orange" id="queue">Medium</span></td>
+          </tr>
+          <tr>
+            <td>Operational Status</td>
+            <td><span class="badge green">Normal</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
 </div>
 
 <script>
-const countries = [
-  ["🇺🇸 United States",29.31],
-  ["🇮🇳 India",5.44],
-  ["🇧🇷 Brazil",4.78],
-  ["🇩🇪 Germany",4.04],
-  ["🇯🇵 Japan",3.89]
-];
+let peopleCount = 24850;
+let peopleNow = 438;
+let cars = 1284;
+let sales = 1840000;
+let transactions = 38420;
 
-const events = [
-  "Internet traffic spike detected - United States",
-  "Wildfire signal updated - California",
-  "Power outage impact increased - Texas",
-  "Weather alert updated - Atlantic region",
-  "Seismic activity layer refreshed - Alaska",
-  "Traffic congestion alert - Phoenix metro",
-  "Critical infrastructure layer synchronized",
-  "External intelligence feed updated"
-];
+function fmt(n){ return Math.round(n).toLocaleString("en-US"); }
+function money(n){
+  if(n >= 1000000) return "$" + (n/1000000).toFixed(2) + "M";
+  return "$" + fmt(n);
+}
+function rand(min,max){ return Math.random()*(max-min)+min; }
 
-function rand(min,max){
-  return Math.random()*(max-min)+min;
+function updateHeader(){
+  document.getElementById("updated").innerText =
+    "Last Updated: " + new Date().toLocaleTimeString() + "  ";
 }
 
-function updateClock(){
-  document.getElementById("clock").innerText =
-    "  " + new Date().toLocaleTimeString();
+function updateKPIs(){
+  peopleCount += Math.floor(rand(8,38));
+  peopleNow += Math.floor(rand(-18,24));
+  cars += Math.floor(rand(2,12));
+  sales += rand(800,4200);
+  transactions += Math.floor(rand(12,55));
+
+  if(peopleNow < 280) peopleNow = 280;
+
+  const conversion = ((transactions / peopleCount) * 100).toFixed(1);
+
+  document.getElementById("peopleCount").innerText = fmt(peopleCount);
+  document.getElementById("peopleNow").innerText = fmt(peopleNow);
+  document.getElementById("cars").innerText = fmt(cars);
+  document.getElementById("sales").innerText = money(sales);
+  document.getElementById("transactions").innerText = fmt(transactions);
+  document.getElementById("conversion").innerText = conversion + "%";
+
+  document.getElementById("parkingOcc").innerText = Math.floor(rand(72,89)) + "%";
+  document.getElementById("basket").innerText = "$" + rand(45,53).toFixed(2);
+
+  const zones = ["Main Entrance","Checkout Area","Electronics","Grocery","Parking North"];
+  document.getElementById("peakZone").innerText = zones[Math.floor(rand(0,zones.length))];
+
+  const q = document.getElementById("queue");
+  const levels = ["Low","Medium","High"];
+  const level = levels[Math.floor(rand(0,levels.length))];
+  q.innerText = level;
+  q.className = "badge " + (level==="Low" ? "green" : level==="Medium" ? "orange" : "red");
 }
-setInterval(updateClock,1000);
-updateClock();
 
-function updateCards(){
-  const traffic = rand(29.1,29.8).toFixed(2);
-  const fires = Math.floor(rand(38,57));
-  const outage = rand(17.5,22.8).toFixed(1);
-  const risk = Math.floor(rand(68,88));
-
-  document.getElementById("traffic").innerText = traffic + "%";
-  document.getElementById("wildfires").innerText = fires;
-  document.getElementById("outages").innerText = outage + "K";
-  document.getElementById("risk").innerText = risk + "%";
-  document.getElementById("riskbar").style.width = risk + "%";
-
-  const status = document.getElementById("status");
-  if(risk < 70){
-    status.innerText = "NORMAL";
-    status.style.color = "#22c55e";
-  } else if(risk < 82){
-    status.innerText = "ELEVATED";
-    status.style.color = "#facc15";
-  } else {
-    status.innerText = "HIGH RISK";
-    status.style.color = "#ef4444";
+const ctxSales = document.getElementById("salesChart").getContext("2d");
+const salesChart = new Chart(ctxSales,{
+  type:"line",
+  data:{
+    labels:["10:00","10:05","10:10","10:15","10:20","10:25","10:30","10:35","10:40","10:45"],
+    datasets:[
+      {
+        label:"Sales",
+        data:[1.1,1.2,1.24,1.33,1.41,1.5,1.57,1.63,1.72,1.84],
+        borderWidth:3,
+        tension:.35
+      },
+      {
+        label:"Transactions",
+        data:[22,24,25,27,29,31,33,34,36,38],
+        borderWidth:3,
+        tension:.35
+      }
+    ]
+  },
+  options:{
+    plugins:{legend:{labels:{color:"#cbd5e1"}}},
+    scales:{
+      x:{ticks:{color:"#9ca3af"},grid:{color:"#253247"}},
+      y:{ticks:{color:"#9ca3af"},grid:{color:"#253247"}}
+    }
   }
+});
+
+const ctxZone = document.getElementById("zoneChart").getContext("2d");
+const zoneChart = new Chart(ctxZone,{
+  type:"doughnut",
+  data:{
+    labels:["Entrance","Checkout","Grocery","Electronics","Parking"],
+    datasets:[{
+      data:[28,21,24,12,15],
+      borderWidth:0
+    }]
+  },
+  options:{
+    plugins:{legend:{labels:{color:"#cbd5e1"}}}
+  }
+});
+
+const ctxParking = document.getElementById("parkingChart").getContext("2d");
+const parkingChart = new Chart(ctxParking,{
+  type:"bar",
+  data:{
+    labels:["North","South","East","West"],
+    datasets:[{
+      label:"Cars Entering",
+      data:[320,280,410,274],
+      borderWidth:1
+    }]
+  },
+  options:{
+    plugins:{legend:{labels:{color:"#cbd5e1"}}},
+    scales:{
+      x:{ticks:{color:"#9ca3af"},grid:{color:"#253247"}},
+      y:{ticks:{color:"#9ca3af"},grid:{color:"#253247"}}
+    }
+  }
+});
+
+function updateCharts(){
+  const now = new Date().toLocaleTimeString().slice(0,5);
+
+  salesChart.data.labels.push(now);
+  salesChart.data.labels.shift();
+
+  salesChart.data.datasets[0].data.push((sales/1000000).toFixed(2));
+  salesChart.data.datasets[0].data.shift();
+
+  salesChart.data.datasets[1].data.push((transactions/1000).toFixed(1));
+  salesChart.data.datasets[1].data.shift();
+
+  salesChart.update();
+
+  zoneChart.data.datasets[0].data = [
+    rand(22,32),rand(16,26),rand(18,28),rand(8,16),rand(12,20)
+  ];
+  zoneChart.update();
+
+  parkingChart.data.datasets[0].data = [
+    rand(280,390),rand(240,360),rand(330,470),rand(220,340)
+  ];
+  parkingChart.update();
 }
 
-function updateTable(){
-  const tbody = document.getElementById("countryTable");
+function updateStoreTable(){
+  const stores = [
+    ["Store #1027 - Houston, TX"],
+    ["Store #2184 - Phoenix, AZ"],
+    ["Store #3091 - Dallas, TX"],
+    ["Store #4477 - Orlando, FL"],
+    ["Store #3741 - Atlanta, GA"]
+  ];
+
+  const tbody = document.getElementById("storeTable");
   tbody.innerHTML = "";
 
-  countries.forEach(c=>{
-    const delta = rand(-0.35,0.35);
-    const value = (c[1] + delta).toFixed(2);
-    const trend = delta >= 0 
-      ? `<span class="up">▲ ${delta.toFixed(2)}%</span>`
-      : `<span class="down">▼ ${Math.abs(delta).toFixed(2)}%</span>`;
+  stores.forEach((s,i)=>{
+    const people = Math.floor(rand(1200,4200));
+    const storeSales = money(rand(85000,260000));
+    const status = i < 2 ? "High" : "Normal";
+    const badge = status === "High" ? "orange" : "green";
 
     tbody.innerHTML += `
       <tr>
-        <td>${c[0]}</td>
-        <td>${value}%</td>
-        <td>${trend}</td>
+        <td>${s[0]}</td>
+        <td>${fmt(people)}</td>
+        <td>${storeSales}</td>
+        <td><span class="badge ${badge}">${status}</span></td>
       </tr>
     `;
   });
 }
 
+const events = [
+  "Person detection increased at Main Entrance",
+  "Vehicle entry detected at Parking North",
+  "Checkout queue threshold reached",
+  "Sales spike detected in Grocery category",
+  "High customer flow detected near Electronics",
+  "Parking occupancy updated",
+  "Transaction volume increased",
+  "Camera analytics synchronized",
+  "Store traffic pattern updated",
+  "Low stock risk correlated with high foot traffic"
+];
+
 function addEvent(){
   const feed = document.getElementById("feed");
   const item = document.createElement("div");
   item.className = "event";
-  item.innerText = new Date().toLocaleTimeString() + "  |  " +
-    events[Math.floor(Math.random()*events.length)];
+  item.innerText = new Date().toLocaleTimeString() + " | " +
+    events[Math.floor(rand(0,events.length))];
   feed.prepend(item);
 
-  while(feed.children.length > 8){
+  while(feed.children.length > 9){
     feed.removeChild(feed.lastChild);
   }
 }
 
-const ctx = document.getElementById("trafficChart").getContext("2d");
-const chart = new Chart(ctx,{
-  type:"line",
-  data:{
-    labels:Array.from({length:12},(_,i)=>i),
-    datasets:[{
-      label:"HTTP Traffic",
-      data:Array.from({length:12},()=>rand(25,35)),
-      borderWidth:3,
-      tension:.35
-    }]
-  },
-  options:{
-    responsive:true,
-    plugins:{
-      legend:{labels:{color:"#cbd5e1"}}
-    },
-    scales:{
-      x:{ticks:{color:"#94a3b8"},grid:{color:"#334155"}},
-      y:{ticks:{color:"#94a3b8"},grid:{color:"#334155"}}
-    }
-  }
-});
-
-function updateChart(){
-  chart.data.labels.push("");
-  chart.data.labels.shift();
-  chart.data.datasets[0].data.push(rand(25,35));
-  chart.data.datasets[0].data.shift();
-  chart.update();
-}
-
-updateCards();
-updateTable();
+updateHeader();
+updateKPIs();
+updateStoreTable();
 addEvent();
 
-setInterval(updateCards,3000);
-setInterval(updateTable,5000);
-setInterval(addEvent,2500);
-setInterval(updateChart,2500);
+setInterval(updateHeader,1000);
+setInterval(updateKPIs,2500);
+setInterval(updateCharts,2500);
+setInterval(updateStoreTable,5000);
+setInterval(addEvent,1800);
 </script>
 
 </body>
